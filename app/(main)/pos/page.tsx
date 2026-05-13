@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 
 import { api } from "@/lib/api";
 
+import { toast } from "sonner"
+
 type Item = {
   item_id: number;
   item_name: string;
@@ -38,7 +40,7 @@ export default function POSPage() {
 
   function addToCart(item: Item) {
     if (item.stock <= 0) {
-      alert("Stock habis");
+      toast.error("Stock habis");
       return;
     }
 
@@ -48,7 +50,7 @@ export default function POSPage() {
 
     if (existing) {
       if (existing.qty >= item.stock) {
-        alert("Stock tidak cukup");
+        toast.error("Stock tidak cukup");
         return;
       }
 
@@ -89,7 +91,7 @@ export default function POSPage() {
     if (!itemData || !cartItem) return;
 
     if (cartItem.qty >= itemData.stock) {
-      alert("Stock tidak cukup");
+      toast.error("Stock tidak cukup");
       return;
     }
 
@@ -139,13 +141,13 @@ export default function POSPage() {
         })),
       });
 
-      alert("Checkout success 🔥");
+      toast.success("Checkout success 🔥");
 
       setCart([]);
 
       fetchItems();
     } catch (err: any) {
-      alert(
+      toast.error(
         err?.response?.data?.error ||
           "checkout failed"
       );
