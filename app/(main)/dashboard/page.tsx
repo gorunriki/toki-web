@@ -61,6 +61,9 @@ export default function DashboardPage() {
   const [lowStockItems, setLowStockItems] =
     useState<any[]>([]);
 
+  const [recentSales, setRecentSales] =
+    useState<any[]>([]);
+
   async function fetchDashboard() {
     try {
       const [
@@ -77,6 +80,10 @@ export default function DashboardPage() {
       setStocks(stocksRes.data);
 
       setSales(salesRes.data);
+
+      setRecentSales(
+        salesRes.data.slice(0, 5)
+      );
 
       setTopSelling(topSellingRes.data);
 
@@ -156,48 +163,6 @@ export default function DashboardPage() {
         Dashboard
       </h1>
 
-      {/* SUMMARY */}
-      <div className="mb-6 grid gap-4 md:grid-cols-3">
-
-        <div className="rounded-2xl bg-white p-6 shadow">
-          <div className="text-sm text-slate-500">
-            Total Items
-          </div>
-
-          <div className="mt-2 text-3xl font-bold">
-            {stocks.length}
-          </div>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow">
-          <div className="text-sm text-slate-500">
-            Total Stock
-          </div>
-
-          <div className="mt-2 text-3xl font-bold">
-            {stocks.reduce(
-              (acc, item) =>
-                acc + item.stock,
-              0
-            )}
-          </div>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow">
-          <div className="text-sm text-slate-500">
-            Total Sales
-          </div>
-
-          <div className="mt-2 text-3xl font-bold">
-            Rp{" "}
-            {sales.reduce(
-              (acc, item) =>
-                acc + item.total_sales,
-              0
-            )}
-          </div>
-        </div>
-      </div>
       {/* SUMMARY CARD */}
       <div className="mb-6 grid gap-4 md:grid-cols-4">
 
@@ -265,7 +230,7 @@ export default function DashboardPage() {
         {lowStockItems.length ===
           0 ? (
           <div className="text-slate-500">
-            No low stock items 🎉
+            No low stock items
           </div>
         ) : (
           <div className="space-y-3">
@@ -302,6 +267,53 @@ export default function DashboardPage() {
 
           </div>
         )}
+
+      </div>
+
+        {/* RECENT SALES */}
+      <div className="mb-6 rounded-2xl bg-white p-6 shadow">
+
+        <div className="mb-4 flex items-center justify-between">
+
+          <h2 className="text-xl font-bold">
+            Recent Sales
+          </h2>
+
+          <span className="text-sm text-slate-500">
+            Last 5 days
+          </span>
+
+        </div>
+
+        <div className="space-y-3">
+
+          {recentSales.map(
+            (sale, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between rounded-xl border p-4"
+              >
+
+                <div>
+                  <div className="font-semibold">
+                    {sale.date}
+                  </div>
+
+                  <div className="text-sm text-slate-500">
+                    Daily Sales
+                  </div>
+                </div>
+
+                <div className="font-bold text-green-600">
+                  Rp{" "}
+                  {sale.total_sales}
+                </div>
+
+              </div>
+            )
+          )}
+
+        </div>
 
       </div>
 
