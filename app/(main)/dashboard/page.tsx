@@ -46,6 +46,18 @@ export default function DashboardPage() {
   const [topSelling, setTopSelling] =
     useState<TopSelling[]>([]);
 
+  const [totalItems, setTotalItems] =
+    useState(0);
+
+  const [totalStock, setTotalStock] =
+    useState(0);
+
+  const [lowStock, setLowStock] =
+    useState(0);
+
+  const [todaySales, setTodaySales] =
+    useState(0);
+
   async function fetchDashboard() {
     try {
       const [
@@ -58,11 +70,70 @@ export default function DashboardPage() {
         api.get("/reports/top-selling"),
       ]);
 
+      // existing state
       setStocks(stocksRes.data);
 
       setSales(salesRes.data);
 
       setTopSelling(topSellingRes.data);
+
+      // ===== METRICS =====
+
+      const stocks =
+        stocksRes.data;
+
+      // total items
+      setTotalItems(
+        stocks.length
+      );
+
+      // total stock
+      const totalStockQty =
+        stocks.reduce(
+          (
+            acc: number,
+            item: any
+          ) =>
+            acc +
+            item.stock,
+          0
+        );
+
+      setTotalStock(
+        totalStockQty
+      );
+
+      // low stock
+      const lowStockItems =
+        stocks.filter(
+          (item: any) =>
+            item.stock > 0 &&
+            item.stock < 5
+        );
+
+      setLowStock(
+        lowStockItems.length
+      );
+
+      // today sales
+      const dailySales =
+        salesRes.data;
+
+      const totalSales =
+        dailySales.reduce(
+          (
+            acc: number,
+            item: any
+          ) =>
+            acc +
+            item.total_sales,
+          0
+        );
+
+      setTodaySales(
+        totalSales
+      );
+
     } catch (err) {
       console.error(err);
     }
@@ -194,6 +265,53 @@ export default function DashboardPage() {
 
       {/* STOCK TABLE */}
       <div className="mt-6 rounded-2xl bg-white p-6 shadow">
+        <div className="mb-6 grid gap-4 md:grid-cols-4">
+
+          {/* TOTAL ITEMS */}
+          <div className="rounded-2xl bg-white p-6 shadow">
+            <div className="text-sm text-slate-500">
+              Total Items
+            </div>
+
+            <div className="mt-2 text-3xl font-bold">
+              {totalItems}
+            </div>
+          </div>
+
+          {/* TOTAL STOCK */}
+          <div className="rounded-2xl bg-white p-6 shadow">
+            <div className="text-sm text-slate-500">
+              Total Stock
+            </div>
+
+            <div className="mt-2 text-3xl font-bold">
+              {totalStock}
+            </div>
+          </div>
+
+          {/* LOW STOCK */}
+          <div className="rounded-2xl bg-white p-6 shadow">
+            <div className="text-sm text-slate-500">
+              Low Stock
+            </div>
+
+            <div className="mt-2 text-3xl font-bold text-yellow-500">
+              {lowStock}
+            </div>
+          </div>
+
+          {/* TODAY SALES */}
+          <div className="rounded-2xl bg-white p-6 shadow">
+            <div className="text-sm text-slate-500">
+              Today Sales
+            </div>
+
+            <div className="mt-2 text-3xl font-bold text-green-600">
+              Rp {todaySales}
+            </div>
+          </div>
+
+        </div>
         <h2 className="mb-4 text-xl font-semibold">
           Current Stock
         </h2>
