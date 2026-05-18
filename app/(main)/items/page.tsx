@@ -15,6 +15,7 @@ type Item = {
     sku: string;
     price_sell: number;
     price_buy: number;
+    stock?: number;
 };
 
 export default function ItemsPage() {
@@ -41,7 +42,32 @@ export default function ItemsPage() {
         try {
             const res = await api.get("/items");
 
-            setItems(res.data);
+            const itemsWithStock =
+                await Promise.all(
+                    res.data.map(
+                        async (item: Item) => {
+                            try {
+                                const stockRes =
+                                    await api.get(
+                                        `/stocks/${item.id}`
+                                    );
+
+                                return {
+                                    ...item,
+                                    stock:
+                                        stockRes.data.stock,
+                                };
+                            } catch {
+                                return {
+                                    ...item,
+                                    stock: 0,
+                                };
+                            }
+                        }
+                    )
+                );
+
+            setItems(itemsWithStock);
         } catch (err) {
             console.error(err);
 
@@ -337,6 +363,10 @@ export default function ItemsPage() {
                             </th>
 
                             <th className="p-4 text-left">
+                                Stock
+                            </th>
+
+                            <th className="p-4 text-left">
                                 Action
                             </th>
                         </tr>
@@ -369,6 +399,19 @@ export default function ItemsPage() {
                                         {
                                             item.price_buy
                                         }
+                                    </td>
+
+                                    <td className="p-4">
+                                        <span
+                                            className={`rounded-full px-3 py-1 text-sm text-white ${item.stock === 0
+                                                    ? "bg-red-500"
+                                                    : item.stock! < 5
+                                                        ? "bg-yellow-500"
+                                                        : "bg-green-600"
+                                                }`}
+                                        >
+                                            {item.stock}
+                                        </span>
                                     </td>
 
                                     <td className="p-4">

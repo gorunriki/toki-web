@@ -10,8 +10,8 @@ import { toast } from "sonner";
 import { api } from "@/lib/api";
 
 type Item = {
-  ID: number;
-  Name: string;
+  id: number;
+  name: string;
 };
 
 type CartItem = {
@@ -74,7 +74,7 @@ export default function InboundPage() {
 
     const item = items.find(
       (i) =>
-        i.ID === Number(selectedItem)
+        i.id === Number(selectedItem)
     );
 
     if (!item) {
@@ -84,13 +84,13 @@ export default function InboundPage() {
     }
 
     const existing = cart.find(
-      (c) => c.item_id === item.ID
+      (c) => c.item_id === item.id
     );
 
     if (existing) {
       setCart((prev) =>
         prev.map((c) =>
-          c.item_id === item.ID
+          c.item_id === item.id
             ? {
                 ...c,
                 qty:
@@ -104,8 +104,8 @@ export default function InboundPage() {
       setCart((prev) => [
         ...prev,
         {
-          item_id: item.ID,
-          name: item.Name,
+          item_id: item.id,
+          name: item.name,
           qty: Number(qty),
           price_buy:
             Number(priceBuy),
@@ -184,10 +184,10 @@ export default function InboundPage() {
 
             {items.map((item) => (
               <option
-                key={item.ID}
-                value={item.ID}
+                key={item.id}
+                value={item.id}
               >
-                {item.Name}
+                {item.name}
               </option>
             ))}
           </select>
