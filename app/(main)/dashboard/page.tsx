@@ -20,8 +20,8 @@ import {
 } from "recharts";
 
 type Stock = {
-  item_id: number;
-  item_name: string;
+  id: number;
+  name: string;
   stock: number;
 };
 
@@ -57,6 +57,9 @@ export default function DashboardPage() {
 
   const [todaySales, setTodaySales] =
     useState(0);
+
+  const [lowStockItems, setLowStockItems] =
+    useState<any[]>([]);
 
   async function fetchDashboard() {
     try {
@@ -104,15 +107,19 @@ export default function DashboardPage() {
       );
 
       // low stock
-      const lowStockItems =
+      const lowStockData =
         stocks.filter(
           (item: any) =>
-            item.stock > 0 &&
             item.stock < 5
         );
 
+
       setLowStock(
-        lowStockItems.length
+        lowStockData.length
+      );
+
+      setLowStockItems(
+        lowStockData
       );
 
       // today sales
@@ -191,6 +198,112 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+      {/* SUMMARY CARD */}
+      <div className="mb-6 grid gap-4 md:grid-cols-4">
+
+        {/* TOTAL ITEMS */}
+        <div className="rounded-2xl bg-white p-6 shadow">
+          <div className="text-sm text-slate-500">
+            Total Items
+          </div>
+
+          <div className="mt-2 text-3xl font-bold">
+            {totalItems}
+          </div>
+        </div>
+
+        {/* TOTAL STOCK */}
+        <div className="rounded-2xl bg-white p-6 shadow">
+          <div className="text-sm text-slate-500">
+            Total Stock
+          </div>
+
+          <div className="mt-2 text-3xl font-bold">
+            {totalStock}
+          </div>
+        </div>
+
+        {/* LOW STOCK */}
+        <div className="rounded-2xl bg-white p-6 shadow">
+          <div className="text-sm text-slate-500">
+            Low Stock
+          </div>
+
+          <div className="mt-2 text-3xl font-bold text-yellow-500">
+            {lowStock}
+          </div>
+        </div>
+
+        {/* TODAY SALES */}
+        <div className="rounded-2xl bg-white p-6 shadow">
+          <div className="text-sm text-slate-500">
+            Today Sales
+          </div>
+
+          <div className="mt-2 text-3xl font-bold text-green-600">
+            Rp {todaySales}
+          </div>
+        </div>
+
+      </div>
+
+      {/* LOW STOCK */}
+      <div className="mb-6 rounded-2xl bg-white p-6 shadow">
+
+        <div className="mb-4 flex items-center justify-between">
+
+          <h2 className="text-xl font-bold">
+            Low Stock Items
+          </h2>
+
+          <span className="rounded-full bg-yellow-100 px-3 py-1 text-sm text-yellow-700">
+            {lowStockItems.length} items
+          </span>
+
+        </div>
+
+        {lowStockItems.length ===
+          0 ? (
+          <div className="text-slate-500">
+            No low stock items 🎉
+          </div>
+        ) : (
+          <div className="space-y-3">
+
+            {lowStockItems.map(
+              (item, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between rounded-xl border p-4"
+                >
+
+                  <div>
+                    <div className="font-semibold">
+                      {item.name}
+                    </div>
+
+                    <div className="text-sm text-slate-500">
+                      SKU: {item.sku}
+                    </div>
+                  </div>
+
+                  <div
+                    className={`rounded-full px-3 py-1 text-sm text-white ${item.stock === 0
+                      ? "bg-red-500"
+                      : "bg-yellow-500"
+                      }`}
+                  >
+                    {item.stock}
+                  </div>
+
+                </div>
+              )
+            )}
+
+          </div>
+        )}
+
+      </div>
 
       {/* CHARTS */}
       <div className="grid gap-6 md:grid-cols-2">
@@ -265,53 +378,6 @@ export default function DashboardPage() {
 
       {/* STOCK TABLE */}
       <div className="mt-6 rounded-2xl bg-white p-6 shadow">
-        <div className="mb-6 grid gap-4 md:grid-cols-4">
-
-          {/* TOTAL ITEMS */}
-          <div className="rounded-2xl bg-white p-6 shadow">
-            <div className="text-sm text-slate-500">
-              Total Items
-            </div>
-
-            <div className="mt-2 text-3xl font-bold">
-              {totalItems}
-            </div>
-          </div>
-
-          {/* TOTAL STOCK */}
-          <div className="rounded-2xl bg-white p-6 shadow">
-            <div className="text-sm text-slate-500">
-              Total Stock
-            </div>
-
-            <div className="mt-2 text-3xl font-bold">
-              {totalStock}
-            </div>
-          </div>
-
-          {/* LOW STOCK */}
-          <div className="rounded-2xl bg-white p-6 shadow">
-            <div className="text-sm text-slate-500">
-              Low Stock
-            </div>
-
-            <div className="mt-2 text-3xl font-bold text-yellow-500">
-              {lowStock}
-            </div>
-          </div>
-
-          {/* TODAY SALES */}
-          <div className="rounded-2xl bg-white p-6 shadow">
-            <div className="text-sm text-slate-500">
-              Today Sales
-            </div>
-
-            <div className="mt-2 text-3xl font-bold text-green-600">
-              Rp {todaySales}
-            </div>
-          </div>
-
-        </div>
         <h2 className="mb-4 text-xl font-semibold">
           Current Stock
         </h2>
@@ -319,11 +385,11 @@ export default function DashboardPage() {
         <div className="space-y-2">
           {stocks.map((item) => (
             <div
-              key={item.item_id}
+              key={item.id}
               className="flex justify-between border-b pb-2"
             >
               <span>
-                {item.item_name}
+                {item.name}
               </span>
 
               <span>
